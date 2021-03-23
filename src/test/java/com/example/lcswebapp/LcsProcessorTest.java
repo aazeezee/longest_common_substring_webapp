@@ -1,0 +1,71 @@
+package com.example.lcswebapp;
+
+import java.util.*;
+import static org.junit.Assert.*;
+import org.junit.*;
+
+public class LcsProcessorTest {
+    private LcsProcessor lcsProcessor = new LcsProcessor();
+
+    @Test
+    public void testGetLongestCommonSubstring() {
+        Set<String> testResultSet = new HashSet<>(0);
+        testResultSet.add(" Adventure");
+        String str1 = "Sonic 2 Battle Adventure";
+        String str2 = "Sonic DX! Adventure";
+        Set<String> actualResultSet = lcsProcessor.getLongestCommonSubstrings(str1, str2);
+
+        assertEquals(testResultSet.size(), actualResultSet.size());
+        assertTrue(actualResultSet.contains(" Adventure"));
+    }
+
+    @Test
+    public void testGetLongestCommonSubstringWithMultipleCommonSubstrings() {
+        Set<String> testResultSet = new HashSet<>(0);
+        testResultSet.add("*Adventure *");
+        testResultSet.add("* Dreamcast*");
+        testResultSet.add("* GameCube *");
+        String str1 = "\"Sonic Adventure\" was released in 1999 on the Sega* Dreamcast*, " +
+                "then remade in 2003 for the Nintendo* GameCube *as \"Sonic *Adventure *DX\"";
+        String str2 = "The sequel, \"*Adventure *2\" was also first launched on the* Dreamcast* in 2001, " +
+                "then ported in an enhanced version for Nintendo's* GameCube *in 2002 as \"Adventure 2: Battle\"";
+        Set<String> actualResultSet = lcsProcessor.getLongestCommonSubstrings(str1, str2);
+
+        assertEquals(testResultSet.size(), actualResultSet.size());
+        assertTrue(actualResultSet.contains("*Adventure *"));
+        assertTrue(actualResultSet.contains("* Dreamcast*"));
+        assertTrue(actualResultSet.contains("* GameCube *"));
+    }
+
+    @Test
+    public void testHandler() {
+        List<String> testValuesList = new ArrayList<>(0);
+        testValuesList.add("Sonic DX! Adventure");
+        testValuesList.add("Sonic 3 Advance");
+        testValuesList.add("Sonic 3 &Knuckles");
+        testValuesList.add("Sonic Mania &Knuckles");
+        testValuesList.add("Sonic 2 Battle Adventure");
+        testValuesList.add("Sonic DX! Mega Collection");
+        List<String> testLcsList = lcsProcessor.handler(testValuesList);
+
+        assertEquals(3, testLcsList.size());
+        assertTrue(testLcsList.contains(" &Knuckles"));
+        assertTrue(testLcsList.contains(" Adventure"));
+        assertTrue(testLcsList.contains("Sonic DX! "));
+    }
+
+    @Test
+    public void testRetainMax() {
+        Set<String> testSet = new HashSet<>(0);
+        testSet.add("Big");
+        testSet.add("Bigger");
+        testSet.add("Humungous");
+        testSet.add("The Entire Universe");
+        testSet.add("Biggest Of All Time");
+        Set<String> resultSet = lcsProcessor.retainMax(testSet);
+
+        assertEquals(2, resultSet.size());
+        assertTrue(resultSet.contains("The Entire Universe"));
+        assertTrue(resultSet.contains("Biggest Of All Time"));
+    }
+}
