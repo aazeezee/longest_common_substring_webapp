@@ -79,7 +79,7 @@ LCS(s) should be {"123456789"}.
 If there aren't any common substrings, just return the longest substring(s) available.
 
 ## How To Run
-In order to run the code, you can use this Maven command to run Apache Tomcat:
+In order to run the code, you can use this Maven command to run Apache Tomcat in your IDE's "Run Configurations": 
 `mvn tomcat7:run`
 
 The web app can then be visited by going to this link in a web browser:
