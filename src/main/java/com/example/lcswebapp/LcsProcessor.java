@@ -80,7 +80,6 @@ public class LcsProcessor {
                 }
             }
         }
-        // If we haven't found any common substrings, we don't want to remove anything from the map yet
         if (currentLcsSet.size() != 0) {
             // Retrieving all substrings from the current map that are the same length or longer than
             // the current LCS(s)
@@ -102,7 +101,8 @@ public class LcsProcessor {
             allSubstrings.putAll(truncatedSubStrMap);
             return currentLcsSet;
         } else {
-            return retainMax(allSubstrings.keySet(), 0);
+            // In the case that we haven't found any common substrings
+            return allSubstrings.keySet();
         }
     }
 
