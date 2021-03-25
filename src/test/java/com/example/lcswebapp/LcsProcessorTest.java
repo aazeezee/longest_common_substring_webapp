@@ -8,36 +8,6 @@ public class LcsProcessorTest {
     private LcsProcessor lcsProcessor = new LcsProcessor();
 
     @Test
-    public void testOldGetLongestCommonSubstring() {
-        Set<String> testResultSet = new HashSet<>(0);
-        testResultSet.add(" Adventure");
-        String str1 = "Sonic 2 Battle Adventure";
-        String str2 = "Sonic DX! Adventure";
-        Set<String> actualResultSet = lcsProcessor.oldGetLCSs(str1, str2);
-
-        assertEquals(testResultSet.size(), actualResultSet.size());
-        assertTrue(actualResultSet.contains(" Adventure"));
-    }
-
-    @Test
-    public void testOldGetLongestCommonSubstringWithMultipleCommonSubstrings() {
-        Set<String> testResultSet = new HashSet<>(0);
-        testResultSet.add("*Adventure *");
-        testResultSet.add("* Dreamcast*");
-        testResultSet.add("* GameCube *");
-        String str1 = "\"Sonic Adventure\" was released in 1999 on the Sega* Dreamcast*, " +
-                "then remade in 2003 for the Nintendo* GameCube *as \"Sonic *Adventure *DX\"";
-        String str2 = "The sequel, \"*Adventure *2\" was also first launched on the* Dreamcast* in 2001, " +
-                "then ported in an enhanced version for Nintendo's* GameCube *in 2002 as \"Adventure 2: Battle\"";
-        Set<String> actualResultSet = lcsProcessor.oldGetLCSs(str1, str2);
-
-        assertEquals(testResultSet.size(), actualResultSet.size());
-        assertTrue(actualResultSet.contains("*Adventure *"));
-        assertTrue(actualResultSet.contains("* Dreamcast*"));
-        assertTrue(actualResultSet.contains("* GameCube *"));
-    }
-
-    @Test
     public void testGetLcs() {
         Set<String> testResultSet = new HashSet<>(0);
         testResultSet.add(" Adventure");
@@ -135,5 +105,35 @@ public class LcsProcessorTest {
         assertEquals(2, resultSet.size());
         assertTrue(resultSet.contains("The Entire Universe"));
         assertTrue(resultSet.contains("Biggest Of All Time"));
+    }
+
+    @Test
+    public void testOldGetLongestCommonSubstring() {
+        Set<String> testResultSet = new HashSet<>(0);
+        testResultSet.add(" Adventure");
+        String str1 = "Sonic 2 Battle Adventure";
+        String str2 = "Sonic DX! Adventure";
+        Set<String> actualResultSet = lcsProcessor.oldGetLCSs(str1, str2);
+
+        assertEquals(testResultSet.size(), actualResultSet.size());
+        assertTrue(actualResultSet.contains(" Adventure"));
+    }
+
+    @Test
+    public void testOldGetLongestCommonSubstringWithMultipleCommonSubstrings() {
+        Set<String> testResultSet = new HashSet<>(0);
+        testResultSet.add("*Adventure *");
+        testResultSet.add("* Dreamcast*");
+        testResultSet.add("* GameCube *");
+        String str1 = "\"Sonic Adventure\" was released in 1999 on the Sega* Dreamcast*, " +
+                "then remade in 2003 for the Nintendo* GameCube *as \"Sonic *Adventure *DX\"";
+        String str2 = "The sequel, \"*Adventure *2\" was also first launched on the* Dreamcast* in 2001, " +
+                "then ported in an enhanced version for Nintendo's* GameCube *in 2002 as \"Adventure 2: Battle\"";
+        Set<String> actualResultSet = lcsProcessor.oldGetLCSs(str1, str2);
+
+        assertEquals(testResultSet.size(), actualResultSet.size());
+        assertTrue(actualResultSet.contains("*Adventure *"));
+        assertTrue(actualResultSet.contains("* Dreamcast*"));
+        assertTrue(actualResultSet.contains("* GameCube *"));
     }
 }
