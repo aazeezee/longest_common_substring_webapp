@@ -4,6 +4,21 @@ import java.util.*;
 
 public class LcsProcessor {
     /**
+     * Custom data structure for storing a Map (where the Keys are substrings and the Values are Sets of
+     * original strings to which the substrings belong), and the maxLength of the longest substring Key
+     */
+    class MapMaxPair {
+        public Map<String, Set<String>> substringMap = new HashMap<String, Set<String>>();
+        public Integer maxLength = 0;
+
+        public MapMaxPair() {}
+        public MapMaxPair(Map<String, Set<String>> substringMap, int maxLength) {
+            this.substringMap.putAll(substringMap);
+            this.maxLength = maxLength;
+        }
+    }
+
+    /**
      * Method meant to be the entry point for making use of this utility class in order to
      * find the longest common substring in a List of Strings
      * @param values
@@ -13,26 +28,42 @@ public class LcsProcessor {
         if (values.size() == 1) {
             return values;
         } else {
-            List<String> lcsList = new ArrayList<String>(getLongestCommonSubstrings(values));
+            Set<String> lcsSet = new HashSet<String>();
+            MapMaxPair mapMaxPair = getAllCommonSubstrings(values);
+            Map<String, Set<String>> commonSubstrMap = mapMaxPair.substringMap;
+            int maxLcsLength = mapMaxPair.maxLength;
+            for (String subStr : commonSubstrMap.keySet()) {
+                if (subStr.length() == maxLcsLength) {
+                    lcsSet.add(subStr);
+                }
+            }
+            List<String> lcsList = new ArrayList<String>(lcsSet);
             Collections.sort(lcsList);
             return lcsList;
         }
     }
 
     /**
-     * Finds all substrings of every String in the passed-in Set of Strings,
+     * Finds all common substrings of every String in the passed-in List of Strings,
      * then stores these substrings as keys in a Map, where the value of each key is a
      * Set of Strings. These Sets of String values will each be a Set of the original String(s)
      * to which the key is a substring of.
      * For example: "Sonic" is a substring of both "Sonic Adventure" and "Sonic & Knuckles",
      * and would therefore lead to an entry in the Map where the key-value pair is:
      * Key = "Sonic", Value = {"Sonic Adventure", "Sonic & Knuckles"}
+     *
+     * Returns a Map of all common substrings paired with the length of the longest substring Key
+     *
+     * If there are no common substrings found, then a Map of all substrings is returned, paired with
+     * the length of the longest substring
      * @param originalStrings
      * @return
      */
-    public Set<String> getLongestCommonSubstrings(List<String> originalStrings) {
+    public MapMaxPair getAllCommonSubstrings(List<String> originalStrings) {
         Map<String, Set<String>> allSubstrings = new HashMap<String, Set<String>>();
-        Set<String> currentLcsSet = new HashSet<String>();
+        Map<String, Set<String>> commonSubstrings = new HashMap<String, Set<String>>();
+        int maxSubstrLength = 0;
+        int maxLcsLength = 0;
         for (int origIdx = 0; origIdx < originalStrings.size(); origIdx++) {
             String original = originalStrings.get(origIdx);
             for (int leftIdx = 0; leftIdx < original.length(); leftIdx++) {
@@ -44,66 +75,45 @@ public class LcsProcessor {
                                 new HashSet<String>(Arrays.asList(original))
                         );
                     } else {
-                        allSubstrings.get(subStr).add(original);
+                        Set<String> originalStrSet = allSubstrings.get(subStr);
+                        // Handling the case where there are duplicate substrings in an original string
+                        // E.g.: "KA ME HA ME HA !"
+                        // "ME", "ME HA", and "HA" are repeated, which could lead to miscalculation of the maxLcsLength
+                        if (!originalStrSet.contains(original)) {
+                            originalStrSet.add(original);
+                            commonSubstrings.put(subStr, originalStrSet);
+                            if (maxLcsLength < subStr.length()) {
+                                maxLcsLength = subStr.length();
+                            }
+                        }
+                    }
+                    // Retrieving the max length of all substrings, regardless of whether an actual LCS has been found
+                    // This accounts for the case where there aren't any common substrings
+                    if (maxSubstrLength < subStr.length()) {
+                        maxSubstrLength = subStr.length();
                     }
                 }
             }
-            if (origIdx >= 1) {
-                currentLcsSet = truncateAllSubstringsMap(allSubstrings);
-            }
         }
-        return retainMax(currentLcsSet, 0);
+        if (commonSubstrings.keySet().size() > 0) {
+            return new MapMaxPair(commonSubstrings, maxLcsLength);
+        } else {
+            return new MapMaxPair(allSubstrings, maxSubstrLength);
+        }
     }
 
-    /**
-     * Method to optimize space complexity by truncating the "allSubstrings" Map.
-     * Takes in the "allSubstrings" Map and finds all keys where the value is a Set with
-     * a size greater than 1. Then, among those keys, finds the key(s) with the longest length
-     * (the current LCS(s)). Finally, removes all keys whose lengths are less than the current LCS(s)
-     * and returns that Set of substring keys
-     * @param allSubstrings
-     * @return The current Set of LCS(s) found so far
-     */
-    public Set<String> truncateAllSubstringsMap(Map<String, Set<String>> allSubstrings) {
-        Map<String, Set<String>> truncatedSubStrMap = new HashMap<String, Set<String>>();
-        Set<String> currentLcsSet = new HashSet<String>();
-        Set<String> keysStillInPlay = new HashSet<String>();
-        // Finding all the keys that belong to more than one String in the original List of String values
-        // (meaning they are mapped to a Set with a size greater than 1).
-        // In other words, finding common substrings.
-        int maxLcsLength = 0;
-        for (String subStr : allSubstrings.keySet()) {
-            if (allSubstrings.get(subStr).size() > 1) {
-                currentLcsSet.add(subStr);
-                if (maxLcsLength < subStr.length()) {
-                    maxLcsLength = subStr.length();
-                }
-            }
-        }
-        if (currentLcsSet.size() != 0) {
-            // Retrieving all substrings from the current map that are the same length or longer than
-            // the current LCS(s)
-            for (String subStr : allSubstrings.keySet()) {
-                if (subStr.length() >= maxLcsLength) {
-                    keysStillInPlay.add(subStr);
-                }
-            }
-            // Removing all keys whose lengths are less than the current LCS(s) by leaving them out
-            // of the truncated Map.
-            // We don't care about substrings that are shorter than the current LCS(s), no matter
-            // how many times they appear, as they can never be the LONGEST common substring
-            for (String key : allSubstrings.keySet()) {
-                if (keysStillInPlay.contains(key)) {
-                    truncatedSubStrMap.put(key, allSubstrings.get(key));
-                }
-            }
-            allSubstrings.clear();
-            allSubstrings.putAll(truncatedSubStrMap);
-            return currentLcsSet;
+    public List<String> oldHandler(List<String> values) {
+        Set<String> lcsSet = new HashSet<String>();
+        if (values.size() == 1) {
+            return values;
         } else {
-            // In the case that we haven't found any common substrings
-            return allSubstrings.keySet();
+            for (int str1 = 0; str1 < values.size() - 1; str1++) {
+                for (int str2 = str1 + 1; str2 < values.size(); str2++) {
+                    lcsSet.addAll(oldGetLCSs(values.get(str1), values.get(str2)));
+                }
+            }
         }
+        return new ArrayList<String>(retainMax(lcsSet, 0));
     }
 
     /**
