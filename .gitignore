@@ -1,2 +1,11 @@
-##
+## Directories
 .idea/
+target/apache-tomcat-maven-plugin/
+target/classes/
+target/generated-sources/
+target/generated-test-sources/
+target/test-classes/
+
+## Files
+*.class
+*.iml
