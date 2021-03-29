@@ -21,7 +21,7 @@ public class LcsProcessor {
                 }
             }
         }
-        return new ArrayList<String>(retainMax(lcsSet));
+        return new ArrayList<String>(retainMax(lcsSet, 0));
     }
 
     /**
@@ -64,33 +64,19 @@ public class LcsProcessor {
     /**
      * Takes in a Set of Strings and removes all Strings except for the longest one(s)
      * @param stringSet
-     * @return A new Set of Strings containing only the longest String(s) from the passed in Set
-     */
-    public Set<String> retainMax(Set<String> stringSet) {
-        Set<String> maxSet = new HashSet<>(0);
-        int max = 0;
-        for (String str : stringSet) {
-            if (max < str.length()) {
-                max = str.length();
-            }
-        }
-
-        for (String str : stringSet) {
-            if (str.length() == max) {
-                maxSet.add(str);
-            }
-        }
-        return maxSet;
-    }
-
-    /**
-     * Overloaded version of retainMax() with max value passed in
-     * @param stringSet
-     * @param max
+     * @param max Can be passed in as 0 when the max length is unknown
      * @return A new Set of Strings containing only the longest String(s) from the passed in Set
      */
     public Set<String> retainMax(Set<String> stringSet, int max) {
-        Set<String> maxSet = new HashSet<>(0);
+        Set<String> maxSet = new HashSet<String>();
+        if (max == 0) {
+            for (String str : stringSet) {
+                if (max < str.length()) {
+                    max = str.length();
+                }
+            }
+        }
+
         for (String str : stringSet) {
             if (str.length() == max) {
                 maxSet.add(str);
